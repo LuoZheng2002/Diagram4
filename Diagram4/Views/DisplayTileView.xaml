@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Diagram4.Views.DisplayTileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Diagram4.Views"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d">
+    <Border BorderBrush="LightGray" BorderThickness="2">
+        <Grid Background="AliceBlue" Width="100">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding DragCommand}" PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" Source="{Binding Image}" Width="75" Height="75"/>
+            <TextBlock Grid.Row="1" Height="25" Text="{Binding Text}" FontSize="20" Background="GreenYellow" TextAlignment="Center"/>
+        </Grid>
+    </Border>
+</UserControl>
