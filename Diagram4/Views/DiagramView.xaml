@@ -34,7 +34,7 @@
             <ItemsControl ItemsSource="{Binding Path=DiagramItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas  Background="LightGray" AllowDrop="True" ClipToBounds="True" Width="2000" Height="2000">
+                        <Canvas Background="LightGray" AllowDrop="True" ClipToBounds="True" Width="2000" Height="2000">
                             
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Drop">
@@ -43,6 +43,10 @@
                                 <i:EventTrigger EventName="MouseLeftButtonDown">
                                     <i:InvokeCommandAction Command="{Binding ClickCommand}"/>
                                 </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseLeftButtonUp">
+                                    <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
+                                </i:EventTrigger>
+
                             </i:Interaction.Triggers>
                         </Canvas>
                     </ItemsPanelTemplate>

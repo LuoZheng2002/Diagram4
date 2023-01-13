@@ -9,27 +9,28 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
 namespace Diagram4.Adorners
 {
 	internal class NodeAdorner : Adorner
 	{
 		VisualCollection AdornerVisuals { get; }
-		static readonly int THUMB_WIDTH = 10;
-		static readonly int THUMB_HEIGHT = 10;
-		public Thumb thumb;
+		static readonly int WIDTH = 10;
+		static readonly int HEIGHT = 10;
+		private readonly Rectangle _rectangle;
+		public event Action<MouseButtonEventArgs>? DragStarted;
 		public NodeAdorner(UIElement adornedElement) : base(adornedElement)
 		{
 			AdornerVisuals = new VisualCollection(this);
-			thumb = new Thumb() {Height = THUMB_HEIGHT, Width = THUMB_WIDTH };
-			thumb.DragDelta += Thumb_DragDelta;
-			AdornerVisuals.Add(thumb);
-			AdornerStyle adornerStyle = new AdornerStyle();
-			thumb.Style = adornerStyle.FindResource("Node") as Style;
-		}
-		private void Thumb_DragDelta(object sender, DragDeltaEventArgs e)
-		{
-
+			_rectangle = new Rectangle { Width = WIDTH, Height = HEIGHT };
+			_rectangle.Fill = Brushes.Red;
+			_rectangle.MouseDown += (_, e) => 
+			{ 
+				Console.WriteLine("Drag Started!");
+				DragStarted?.Invoke(e);
+			};
+			AdornerVisuals.Add(_rectangle);
 		}
 		protected override Visual GetVisualChild(int index)
 		{
@@ -37,7 +38,7 @@ namespace Diagram4.Adorners
 		}
 		protected override Size ArrangeOverride(Size finalSize)
 		{
-			thumb.Arrange(new Rect(AdornedElement.DesiredSize.Width - THUMB_WIDTH/2 , (AdornedElement.DesiredSize.Height - THUMB_HEIGHT)/2, THUMB_WIDTH, THUMB_HEIGHT));
+			_rectangle.Arrange(new Rect(AdornedElement.DesiredSize.Width - WIDTH / 2, (AdornedElement.DesiredSize.Height - HEIGHT) / 2, WIDTH, HEIGHT));
 			return base.ArrangeOverride(finalSize);
 		}
 		protected override int VisualChildrenCount => AdornerVisuals.Count;

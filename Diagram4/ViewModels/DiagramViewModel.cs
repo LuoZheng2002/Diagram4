@@ -14,9 +14,18 @@ using System.Windows.Input;
 
 namespace Diagram4.ViewModels
 {
+    internal class DragInfo
+    {
+        public StrategySetViewModel? StrategySetFrom { get; set; }
+        public StrategySetViewModel? StrategySetTo { get; set;}
+        public StrategyViewModel? StrategyFrom { get; set; }
+        public bool Dragging { get; set; }
+    }
     internal class DiagramViewModel:ViewModelBase
     {
         private Model _model;
+        private readonly DragInfo _dragInfo = new DragInfo();
+        public Canvas Canvas { get; set; }
         public ObservableCollection<UserControl> DiagramItems { get; }
         public List<ViewModelBase> DiagramItemViewModels { get; }
         public DisplayTileViewModel DisplayTile0 { get; }
@@ -25,8 +34,10 @@ namespace Diagram4.ViewModels
         public DisplayTileViewModel DisplayTile3 { get; }
         public Command DropCommand { get; }
         public Command ClickCommand { get; }
+        public Command MouseLeftButtonUpCommand { get; }
         public event Action? CanvasClicked;
         public event Action<object>? KeyDown;
+
         public DiagramViewModel(Model model)
         {
             _model = model;
@@ -36,6 +47,7 @@ namespace Diagram4.ViewModels
             DisplayTile3 = new DisplayTileViewModel() { Text = "P", ImageName = "../Images/gua.jpg" };
             DropCommand = new Command(OnDrop);
             ClickCommand = new Command(OnClick);
+            MouseLeftButtonUpCommand= new Command(OnMouseLeftButtonUp);
             DiagramItems = new ObservableCollection<UserControl>();
             DiagramItemViewModels = new List<ViewModelBase>();
         }
@@ -57,6 +69,7 @@ namespace Diagram4.ViewModels
                                 StrategySetViewModel strategySetViewModel = new StrategySetViewModel();
                                 strategySetViewModel.Text = "Strategy Set Name Here!";
                                 strategySetViewModel.ImageName = "../Images/114514.jpeg";
+                                strategySetViewModel.DragStarted += OnDragStarted;
                                 CanvasClicked += strategySetViewModel.OnCanvasClicked;
                                 KeyDown += strategySetViewModel.OnKeyDown;
                                 strategySetView.DataContext= strategySetViewModel;
@@ -93,6 +106,21 @@ namespace Diagram4.ViewModels
         public void OnKeyDown(object obj)
         {
             KeyDown?.Invoke(obj);
+        }
+        void OnMouseLeftButtonUp(object? obj)
+        {
+            Console.WriteLine("Mouse released, drag interrupted");
+            _dragInfo.Dragging = false;
+        }
+        void OnDragStarted(StrategySetViewModel strategySetViewModel,
+            StrategyViewModel strategyViewModel,
+            MouseButtonEventArgs e)
+        {
+            _dragInfo.Dragging = true;
+            _dragInfo.StrategySetFrom = strategySetViewModel;
+            _dragInfo.StrategyFrom = strategyViewModel;
+            e.GetPosition()
+            Console.WriteLine()
         }
     }
 }

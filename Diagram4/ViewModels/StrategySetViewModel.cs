@@ -64,10 +64,15 @@ namespace Diagram4.ViewModels
 
 		public event Action? CanvasClicked;
 		public event Action<object>? KeyDown;
+		public event Action<StrategySetViewModel, StrategyViewModel, MouseButtonEventArgs> DragStarted;
 		public StrategySetViewModel()
 		{
 			DropCommand = new Command(OnDrop);
 			SelectCommand = new Command(OnSelect);
+		}
+		void OnDragStarted(StrategyViewModel strategyViewModel, MouseButtonEventArgs e)
+		{
+			DragStarted?.Invoke(this, strategyViewModel, e);
 		}
 		private void AddChild(int index)
 		{
@@ -75,6 +80,7 @@ namespace Diagram4.ViewModels
 			StrategyViewModel strategyViewModel = new StrategyViewModel(strategyView.TextBlock);
 			strategyView.DataContext = strategyViewModel;
 			strategyViewModel.Dropped += OnChildDrop;
+			strategyViewModel.DragStarted += OnDragStarted;
 			StrategyViews.Insert(index, strategyView);
 			StrategyViewModels.Insert(index, strategyViewModel);
 			strategyViewModel.Text = "Strategy " + number.ToString();

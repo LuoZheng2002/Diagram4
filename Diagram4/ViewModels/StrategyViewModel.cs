@@ -67,6 +67,7 @@ namespace Diagram4.ViewModels
 		public TextBlock TextBlock { get; }
 		public event Action? CanvasClicked;
 		public event Action<object>? KeyDown;
+		public event Action<StrategyViewModel, MouseButtonEventArgs> DragStarted;
 		public StrategyViewModel(TextBlock textBlock)
 		{
 			TextBlock = textBlock;
@@ -77,8 +78,12 @@ namespace Diagram4.ViewModels
 			MouseLeaveCommand = new Command(OnMouseLeave);
 			_nodeAdorner = new NodeAdorner(textBlock);
 			_nodeAdorner.MouseLeave += OnMouseLeaveNodeAdorner;
+			_nodeAdorner.DragStarted += OnDragStarted;
 		}
-
+		void OnDragStarted(MouseButtonEventArgs e)
+		{
+			DragStarted?.Invoke(this, e);
+		}
 		private void OnMouseLeaveNodeAdorner(object sender, MouseEventArgs e)
 		{
 			if (!MouseInTextBlock(e))
