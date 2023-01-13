@@ -19,6 +19,7 @@ namespace Diagram4.Adorners
         public Thumb thumb;
         static readonly int THUMB_WIDTH = 30;
         static readonly int THUMB_HEIGHT = 30;
+        public event Action? Drag;
         public MoveAdorner(UIElement adornedElement) : base(adornedElement)
         {
             AdornerVisuals = new VisualCollection(this);
@@ -33,6 +34,7 @@ namespace Diagram4.Adorners
         {
             Canvas.SetLeft(AdornedElement, Canvas.GetLeft(AdornedElement) + e.HorizontalChange);
             Canvas.SetTop(AdornedElement, Canvas.GetTop(AdornedElement) + e.VerticalChange);
+            Drag?.Invoke();
         }
 
         protected override Visual GetVisualChild(int index)

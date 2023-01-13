@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width ="auto"/>
@@ -35,7 +36,6 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas Background="LightGray" AllowDrop="True" ClipToBounds="True" Width="2000" Height="2000">
-                            
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Drop">
                                     <i:InvokeCommandAction Command="{Binding DropCommand}" PassEventArgsToCommand="True"/>
@@ -44,9 +44,11 @@
                                     <i:InvokeCommandAction Command="{Binding ClickCommand}"/>
                                 </i:EventTrigger>
                                 <i:EventTrigger EventName="MouseLeftButtonUp">
-                                    <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
+                                    <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}" PassEventArgsToCommand="True"/>
                                 </i:EventTrigger>
-
+                                <i:EventTrigger EventName="Loaded">
+                                    <i:InvokeCommandAction Command="{Binding CanvasLoadedCommand}" PassEventArgsToCommand="True"/>
+                                </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </Canvas>
                     </ItemsPanelTemplate>

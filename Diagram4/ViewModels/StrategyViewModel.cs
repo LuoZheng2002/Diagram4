@@ -1,6 +1,8 @@
 ﻿using Diagram4.Adorners;
+using Diagram4.Views;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,11 +11,13 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Diagram4.ViewModels
 {
 	internal class StrategyViewModel : ViewModelBase, ISelectable
 	{
+		public StrategyView View { get; set; }
 		private bool _isSelected;
 		public bool IsSelected
 		{
@@ -35,6 +39,8 @@ namespace Diagram4.ViewModels
 				}
 			}
 		}
+		public ConnectionLine? Line { get; set; }
+		public StrategySetViewModel? StrategySetConnectedTo { get; set; }
 		private string _text = "";
 		public string Text
 		{
@@ -60,29 +66,43 @@ namespace Diagram4.ViewModels
 		}
 		public Command DropCommand { get; }
 		public Command SelectCommand { get; }
-		public Command KeyDownCommand { get; }
 		public Command MouseEnterCommand { get; }
 		public Command MouseLeaveCommand { get; }
+		public Command LoadedCommand { get; }
 		private readonly NodeAdorner _nodeAdorner;
+		private readonly NodeDummyAdorner _nodeDummyAdorner;
 		public TextBlock TextBlock { get; }
 		public event Action? CanvasClicked;
-		public event Action<object>? KeyDown;
-		public event Action<StrategyViewModel, MouseButtonEventArgs> DragStarted;
-		public StrategyViewModel(TextBlock textBlock)
+		public event Action<KeyEventArgs>? KeyDown;
+		public event Action<StrategyViewModel, FrameworkElement>? DragStarted;
+		public event Action? PositionChanged;
+
+		public event Action<StrategyViewModel, FrameworkElement>? NotifyStrategyPosition;
+		public StrategyViewModel(StrategyView view)
 		{
-			TextBlock = textBlock;
+			View = view;
+			TextBlock = View.TextBlock;
 			DropCommand = new Command(OnDrop);
 			SelectCommand = new Command(OnSelect);
-			KeyDownCommand = new Command(OnKeyDown);
 			MouseEnterCommand= new Command(OnMouseEnter);
 			MouseLeaveCommand = new Command(OnMouseLeave);
-			_nodeAdorner = new NodeAdorner(textBlock);
+			LoadedCommand = new Command(OnLoaded);
+			_nodeAdorner = new NodeAdorner(TextBlock);
 			_nodeAdorner.MouseLeave += OnMouseLeaveNodeAdorner;
 			_nodeAdorner.DragStarted += OnDragStarted;
+			_nodeDummyAdorner = new NodeDummyAdorner(TextBlock);
+			_nodeDummyAdorner.NotifyStrategyPosition += OnNotifyStrategyPosition;
+			PositionChanged += _nodeDummyAdorner.OnPositionChanged;
 		}
-		void OnDragStarted(MouseButtonEventArgs e)
+		public void SetUpDummyAdorner()
 		{
-			DragStarted?.Invoke(this, e);
+			AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(TextBlock);
+			adornerLayer.Add(_nodeDummyAdorner);
+			
+		}
+		void OnDragStarted(FrameworkElement dragSource)
+		{
+			DragStarted?.Invoke(this, dragSource);
 		}
 		private void OnMouseLeaveNodeAdorner(object sender, MouseEventArgs e)
 		{
@@ -113,10 +133,9 @@ namespace Diagram4.ViewModels
 			CanvasClicked?.Invoke();
 			OnDeselect(null);
 		}
-		public void OnKeyDown(object? obj)
+		public void OnKeyDown(KeyEventArgs e)
 		{
-			KeyDown?.Invoke(obj);
-			KeyEventArgs e = (obj as KeyEventArgs)!;
+			KeyDown?.Invoke(e);
 			if (e.Key == Key.Delete && IsSelected)
 			{
 				DeleteChild?.Invoke(this);
@@ -142,7 +161,12 @@ namespace Diagram4.ViewModels
 		void ShowNodeAdorner()
 		{
 			AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(TextBlock);
-			if (adornerLayer.GetAdorners(TextBlock) == null)
+			Adorner[] adorners = adornerLayer.GetAdorners(TextBlock);
+			if (adorners == null)
+			{
+				Console.WriteLine("Dummy adorner not successfully added.");
+			}
+			else if (!adorners.Contains(_nodeAdorner))
 			{
 				adornerLayer.Add(_nodeAdorner);
 			}
@@ -154,7 +178,12 @@ namespace Diagram4.ViewModels
 		void HideNodeAdorner()
 		{
 			AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(TextBlock);
-			if (adornerLayer.GetAdorners(TextBlock).Count() > 0)
+			Adorner[] adorners = adornerLayer.GetAdorners(TextBlock);
+			if (adorners == null)
+			{
+				Console.WriteLine("There is no adorners.");
+			}
+			else if (adorners.Contains(_nodeAdorner))
 			{
 				adornerLayer.Remove(_nodeAdorner);
 			}
@@ -166,6 +195,30 @@ namespace Diagram4.ViewModels
 		~StrategyViewModel()
 		{
 			Console.WriteLine("Strategy Destructed!");
+		}
+		public void OnPositionChanged()
+		{
+			PositionChanged?.Invoke();
+		}
+		public void OnConnectionLineDestroyed(ConnectionLine line)
+		{
+			if (Line != line)
+			{
+				Console.WriteLine("不是一条线？");
+			}
+			Line = null;
+			StrategySetConnectedTo = null;
+		}
+		public void OnNotifyStrategyPosition(FrameworkElement element)
+		{
+			if (Line != null)
+			{
+				NotifyStrategyPosition?.Invoke(this, element);
+			}
+		}
+		public void OnLoaded(object? obj)
+		{
+			SetUpDummyAdorner();
 		}
 	}
 }

@@ -13,24 +13,18 @@ using System.Windows.Shapes;
 
 namespace Diagram4.Adorners
 {
-	internal class NodeAdorner : Adorner
+	internal class NodeDummyAdorner : Adorner
 	{
 		VisualCollection AdornerVisuals { get; }
 		static readonly int WIDTH = 10;
 		static readonly int HEIGHT = 10;
 		private readonly Rectangle _rectangle;
-		public event Action<FrameworkElement>? DragStarted;
-		
-		public NodeAdorner(UIElement adornedElement) : base(adornedElement)
+		public event Action<FrameworkElement>? NotifyStrategyPosition;
+		public NodeDummyAdorner(UIElement adornedElement) : base(adornedElement)
 		{
 			AdornerVisuals = new VisualCollection(this);
 			_rectangle = new Rectangle { Width = WIDTH, Height = HEIGHT };
-			_rectangle.Fill = Brushes.Red;
-			_rectangle.MouseDown += (_, e) => 
-			{ 
-				Console.WriteLine("Drag Started!");
-				DragStarted?.Invoke(_rectangle);
-			};
+			_rectangle.Fill = Brushes.Transparent; 
 			AdornerVisuals.Add(_rectangle);
 		}
 		protected override Visual GetVisualChild(int index)
@@ -43,6 +37,9 @@ namespace Diagram4.Adorners
 			return base.ArrangeOverride(finalSize);
 		}
 		protected override int VisualChildrenCount => AdornerVisuals.Count;
-		
+		public void OnPositionChanged()
+		{
+			NotifyStrategyPosition?.Invoke(_rectangle);
+		}
 	}
 }

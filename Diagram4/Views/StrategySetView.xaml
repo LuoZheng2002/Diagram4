@@ -6,6 +6,20 @@
              xmlns:local="clr-namespace:Diagram4.Views"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="MouseLeftButtonUp">
+            <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="MouseEnter">
+            <i:InvokeCommandAction Command="{Binding MouseEnterCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="MouseLeave">
+            <i:InvokeCommandAction Command="{Binding MouseLeaveCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <UserControl.Resources>
         <Style TargetType="Thumb" x:Key="RedEllipse">
             <Setter Property="Template">
@@ -17,7 +31,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border BorderBrush="AliceBlue" BorderThickness="3" Name="MyBorder">
+    <Border BorderBrush="{Binding BackgroundColor}" BorderThickness="5" Name="MyBorder">
         
         <Grid Width="200" Background="White" Name="MyGrid">
             <Grid.RowDefinitions>
@@ -31,7 +45,7 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" Source="{Binding Image}" Width="30" Height="30" AllowDrop="False"/>
-                <TextBlock Grid.Column="1" Text="{Binding Text}" Background="{Binding Background}" AllowDrop="False" Width="170">
+                <TextBlock Grid.Column="1" Text="{Binding Text}" Background="{Binding TextColor}" AllowDrop="False" Width="170">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonDown">
                             <i:InvokeCommandAction Command="{Binding SelectCommand}" PassEventArgsToCommand="True"/>

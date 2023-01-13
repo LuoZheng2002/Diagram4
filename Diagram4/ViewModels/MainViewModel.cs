@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Diagram4.ViewModels
 {
@@ -24,7 +25,7 @@ namespace Diagram4.ViewModels
 			}
 		}
 		public Command KeyDownCommand { get; }
-		public event Action<object>? KeyDown;
+		public event Action<KeyEventArgs>? KeyDown;
 		public void NavigateToDiagram()
 		{
 			DiagramViewModel diagramViewModel = new DiagramViewModel(_model);
@@ -39,7 +40,8 @@ namespace Diagram4.ViewModels
 		}
 		public void OnKeyDown(object? obj)
 		{
-			KeyDown?.Invoke(obj);
+			KeyEventArgs e = (obj as KeyEventArgs)!;
+			KeyDown?.Invoke(e);
 		}
 	}
 }

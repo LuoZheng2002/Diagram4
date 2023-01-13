@@ -16,9 +16,6 @@
         <DataTemplate DataType="{x:Type vms:DisplayTileViewModel}">
             <views:DisplayTileView/>
         </DataTemplate>
-        <ControlTemplate TargetType="Thumb" x:Key="Transparent">
-            <Rectangle Fill="Transparent"/>
-        </ControlTemplate>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="KeyDown">

@@ -24,5 +24,6 @@ namespace Diagram4.Views
         {
             InitializeComponent();
         }
-    }
+
+	}
 }
